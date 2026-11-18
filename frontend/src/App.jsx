@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import api, { errText } from "./api.js";
-import Dashboard from "./dashboard.jsx";
+import Dashboard from "./Dashboard.jsx";
 import Stories from "./Stories.jsx";
 import Tracker from "./Tracker.jsx";
 import History from "./History.jsx";
