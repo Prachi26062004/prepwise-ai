@@ -10,3 +10,6 @@ gunicorn>=22
 pytest>=8
 pytest-django>=4.8
 google-genai>=1.0
+whitenoise>=6.6
+dj-database-url>=2.1
+psycopg[binary]>=3.1

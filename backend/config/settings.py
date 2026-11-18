@@ -51,3 +51,28 @@ AI_PRICE_OUT = os.environ.get("AI_PRICE_OUT", "0.60")  # USD per 1M output token
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+# ---- Production settings (used when deployed) ----
+import dj_database_url
+
+if not DEBUG and SECRET_KEY == "dev-only-insecure-key":
+    raise RuntimeError("Set DJANGO_SECRET_KEY when DJANGO_DEBUG=0")
+
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
+
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Rate limits protect your Gemini quota from abuse
+REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = [
+    "rest_framework.throttling.AnonRateThrottle",
+    "rest_framework.throttling.UserRateThrottle",
+]
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {"anon": "30/min", "user": "120/min"}
